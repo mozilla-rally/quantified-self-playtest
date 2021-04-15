@@ -7,18 +7,18 @@ import replace from "@rollup/plugin-replace";
 import resolve from "@rollup/plugin-node-resolve";
 
 /**
- * Helper to detect developer mode.
- *
- * @param cliArgs the command line arguments.
- * @return {Boolean} whether or not developer mode is enabled.
- */
+  * Helper to detect developer mode.
+  *
+  * @param cliArgs the command line arguments.
+  * @return {Boolean} whether or not developer mode is enabled.
+  */
 function isDevMode(cliArgs) {
   return Boolean(cliArgs["config-enable-developer-mode"]);
 }
 
 export default (cliArgs) => [
   {
-    input: "src/background.js",
+    input: "src/main.js",
     output: {
       file: "dist/background.js",
       sourcemap: isDevMode(cliArgs) ? "inline" : false,
@@ -37,16 +37,23 @@ export default (cliArgs) => [
     ],
   },
   {
-    input: "src/content-script.js",
+    input: "src/content-scripts/attention-collector.js",
     output: {
-      file: "dist/content-script.js",
+      file: "dist/content-scripts/attention-collector.js",
       sourcemap: isDevMode(cliArgs) ? "inline" : false,
     },
     plugins: [
+      replace({
+        // In Developer Mode, the study does not submit data and
+        // gracefully handles communication errors with the Core
+        // Add-on.
+        __ENABLE_DEVELOPER_MODE__: isDevMode(cliArgs),
+      }),
       resolve({
         browser: true,
       }),
       commonjs(),
     ],
-  },
+  }
+  // NOTE: a content script rollup is not needed for this study.
 ];

@@ -7,8 +7,10 @@
     export let data;
 
     let mounted = false;
+    console.log('what?')
     onMount(() => {
         mounted = true;
+        console.log({mounted})
     });
 
     const dispatch = createEventDispatcher();
@@ -20,7 +22,6 @@
     gap: .5em;
 }
 </style>
-
 {#if mounted}
     <div class="admin" in:fly={{ duration: 800, y: 5 }}>
         <header>

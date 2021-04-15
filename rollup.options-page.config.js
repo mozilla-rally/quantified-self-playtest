@@ -10,6 +10,8 @@
  import { terser } from 'rollup-plugin-terser';
  import css from 'rollup-plugin-css-only';
  
+console.log('GENERATE OPTIONS PAGE')
+
    const production = !process.env.ROLLUP_WATCH;
    /**
    * Server.for the developer mode options page.
@@ -75,7 +77,7 @@
    
        // If we're building for production (npm run build
        // instead of npm run dev), minify
-       production && terser(),
+      //  production && terser(),
      ],
      watch: {
        clearScreen: false,

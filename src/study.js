@@ -1,18 +1,18 @@
 // import { Rally, runStates } from "@mozilla/rally";
 import browser from "webextension-polyfill";
+import EventStreamInspector from "./event-stream-inspector";
 import { onPageData } from "./attention-reporter";
+
+const inspector = new EventStreamInspector();
   
 function collectEventDataAndSubmit(devMode) {
+  inspector.initialize();
   // note: onPageData calls startMeasurement.
   onPageData.addListener(async (data) => {
     if (devMode) {
       console.debug("RS01.event", data);
     }
-    // though we collect the data as two different event types using Web Science,
-    // we send the payload using one schema, "RS01.event".
-    // Once https://github.com/mozilla-rally/web-science/issues/33 is resolved,
-    // we will change the collection schema (but keep this pipeline schema the same).
-    //rally.sendPing("RS01.event", data);
+    inspector.storage.push(data);
   }, {
       matchPatterns: ["<all_urls>"],
       privateWindows: false

@@ -10,7 +10,7 @@
 
   "applications": {
     "gecko": {
-      "id": "rally-study-01@mozilla.org",
+      "id": "rally-study-02@mozilla.org",
       "strict_min_version": "77.0a1"
     }
   },

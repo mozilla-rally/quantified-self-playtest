@@ -2,7 +2,7 @@
   "name": "rally-study-01",
   "version": "0.1.2",
   "scripts": {
-    "build": "npm run build:schema && rollup -c",
+    "build": "npm run build:options-page && npm run build:addon",
     "build:addon": "rollup -c && web-ext build --overwrite-dest",
     "build:options-page": "rollup -c rollup.options-page.config.js",
     "build:schema": "node schemas/generate-schema.mjs",

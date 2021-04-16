@@ -36,7 +36,7 @@
             {#if data.length}
                 {data.length}
                 item{data.length === 1 ? '' : 's'}.
-                <ViewData {data} />
+                <!-- <ViewData {data} /> -->
             {:else}no browsing data yet{/if}
         </main>
     </div>

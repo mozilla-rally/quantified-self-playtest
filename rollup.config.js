@@ -37,9 +37,9 @@ export default (cliArgs) => [
     ],
   },
   {
-    input: "src/content-scripts/attention-collector.js",
+    input: "src/basic.collector.js",
     output: {
-      file: "dist/content-scripts/attention-collector.js",
+      file: "dist/content-scripts/basic.collector.js",
       sourcemap: isDevMode(cliArgs) ? "inline" : false,
     },
     plugins: [

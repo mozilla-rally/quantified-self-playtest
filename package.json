@@ -85,6 +85,7 @@
     "webextension-polyfill": "^0.7.0"
   },
   "dependencies": {
+    "immer": "^9.0.1",
     "sirv-cli": "^1.0.10"
   },
   "engines": {

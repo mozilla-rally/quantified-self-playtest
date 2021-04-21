@@ -1,7 +1,15 @@
 // import { Rally, runStates } from "@mozilla/rally";
 import browser from "webextension-polyfill";
 import EventStreamInspector from "./event-stream-inspector";
-import { basicReporter } from './study.config';
+import Reporter from "./Reporter";
+
+const basicReporter = new Reporter({ collectorName: "basic" });
+basicReporter.addSchema("attentionEvent", {
+  attentionCount: 'number',
+  totalAttentionTime: 'number',
+  url: "string",
+  maxPixelScrollDepth: 'number'
+});
 
 const inspector = new EventStreamInspector();
   
@@ -10,7 +18,7 @@ function collectEventDataAndSubmit(devMode) {
   // note: onPageData calls startMeasurement.
   basicReporter.addListener(async (data) => {
     if (devMode) {
-      console.debug("RS01.event", data);
+      console.debug("attentionEvent", data);
     }
     inspector.storage.push(data);
   }, {

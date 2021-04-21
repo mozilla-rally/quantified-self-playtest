@@ -6,9 +6,10 @@ import { produce } from "immer/dist/immer.cjs.production.min";
 const EVENTS = ['interval', 'page-visit-start', 'page-visit-stop', 'attention-start', 'attention-stop', 'audio-start', 'audio-stop'];
 
 export default class Collector {
-    constructor(args) {
+    constructor(args = {}) {
         const initialState = args.initialState;
-        this._state = initialState ? {...initialState} : {};
+        // If no initial state is passed in, opt for a plain object.
+        this._state = {...(initialState || {})};
         this.collectors = {};
         this.reporters = {};
         this.collectionIntervals = [];
@@ -16,7 +17,7 @@ export default class Collector {
 
     collect(event, callback, timing) {
         if (!EVENTS.includes(event)) throw Error(`collect received an unrecognized event type "${event}"`);
-        if (!(callback instanceof Function)) throw Error(`the callback must be a function. Instead received ${typeof callback}`);
+        if (!(callback instanceof Function)) throw Error(`the collect callback must be a function. Instead received ${typeof callback}`);
         if (event === 'interval') {
             this.collectionIntervals.push({
                 callback, timing
@@ -26,24 +27,49 @@ export default class Collector {
         }
     }
 
-    sendOn(event, ...configs) {
-        if (!EVENTS.includes(event)) throw Error(`sendOn received an unrecognized event type "${event}"`);
-        if (configs.length === 0) throw Error(`sendOn requires at least one defined configuration`)
-        this.reporters[event] = [...(this.reporters[event] || []), configs];
+    report(event, callback) {
+        if (!EVENTS.includes(event)) throw Error(`report received an unrecognized event type "${event}"`);
+        if (!(callback instanceof Function || typeof callback === 'string')) throw Error(`the report callback must be a function or string. Instead received ${typeof callback}`);
+        this.reporters[event] = [...(this.reporters[event] || []), callback];
+    }
+
+    _sendTo(schemaNamespace, payload) {
+        PageManager.sendMessage({
+            type: schemaNamespace,
+            ...payload
+        })
+    }
+
+    _executeCollectionCallbacks(event, params) {
+        this.collectors[event].forEach((callback) => {
+            this._state = produce(this._state, (state) => {
+                callback(state, params, PageManager);
+            })
+        });
+    }
+
+    _executeReportingCallbacks(event, params) {
+        this.reporters[event].forEach((callbackOrNamespace) => {
+            const finalState = produce(this._state, () => {});
+            if (typeof callbackOrNamespace === 'string') {
+                this._sendTo(callbackOrNamespace, finalState);
+            } else if (typeof callbackOrNamespace === 'function') {
+                callbackOrNamespace(finalState, this._sendTo, params, PageManager);
+            } else {
+                throw Error("report argument must be")
+            }
+            
+        });
     }
 
     _addCallbacksToListener(event) {
         if ((event !== 'interval') && !(event in this.collectors) && !(event in this.reporters)) { return; }
-
-        // FIXME: add tests
         if (event === 'interval') {
             this.collectionIntervals.forEach((interval) => {
-                console.debug('running interrval')
                 interval.id = setInterval(() => {
                     this._state = produce(this._state, (state) => {
                         interval.callback(state, { timeStamp: +new Date() }, PageManager);
                     })
-                    //interval.callback(this._state, { timeStamp: +new Date() }, PageManager);
                 }, interval.timing);
             });
             return;
@@ -80,75 +106,29 @@ export default class Collector {
             }
         }
 
-        const produceState = (event, params) => {
-            this.collectors[event].forEach((callback) => {
-                this._state = produce(this._state, (state) => {
-                    callback(state, params, PageManager);
-                })
-                //callback(this._state, params, PageManager);
-            });
-        }
-
-        // FIXME: we need tests for this.
-        const reportState = (namespace, callback) => {
-            // do nothing with callback for now but
-            // once we figure out produce, it should be
-            // creating a final state to be reported.
-            let finalState = this._state;
-            if (callback) {
-                finalState = produce(this._state, (state) => {
-                    callback(state, PageManager);
-                })
-            }
-            PageManager.sendMessage({
-                type: namespace,
-                ...finalState
-            });
-        }
-
         // run page visit start asap if PageManager is already running.
         if (event === 'page-visit-start' && PageManager.pageVisitStarted) {
-            produceState('page-visit-start', { timeStamp: PageManager.pageVisitStartTime });
+            this._executeCollectionCallbacks('page-visit-start', { timeStamp: PageManager.pageVisitStartTime });
             return;
         }
 
         pageManagerEvent.addListener((params) => {
             // run all the functions for this pageManagerEvent.
             // FIXME: requires cleanup at some point
-            if (event in this.collectors) {
-                if ((event === 'attention-start' && PageManager.pageHasAttention)) {
-                    console.log('COLLECT', event);
-                    produceState('attention-start', params);
-                } else if (event === 'attention-stop' && !PageManager.pageHasAttention) {
-                    console.log('COLLECT', event);
-                    produceState('attention-stop', params);
-                } else if (event === 'audio-start' && PageManager.pageHasAudio) {
-                    console.log('COLLECT', event);
-                    produceState('audio-start', params);
-                } else if (event === 'audio-stop' && !PageManager.pageHasAudio) {
-                    console.log('COLLECT', event);
-                    produceState('audio-stop', params);
-                } else if (event === 'page-visit-start' || event === 'page-visit-stop') {
-                    console.log('COLLECT', event);
-                    produceState(event, params);
-                }
+            // 
+            const thisCallbackShouldBeRun = 
+            (event === 'attention-start' && PageManager.pageHasAttention) || // actual attention start
+            (event === 'attention-stop' && !PageManager.pageHasAttention) || // actual attention end
+            (event === 'audio-start' && PageManager.pageHasAudio) || // actual audio start
+            (event === 'audio-stop' && !PageManager.pageHasAudio) || // actual audio end
+            (event === 'page-visit-start' || event === 'page-visit-stop');
+
+            if (event in this.collectors && thisCallbackShouldBeRun) {
+                this._executeCollectionCallbacks(event, params);
             }
-            if (event in this.reporters) {
-                this.reporters[event].forEach((reportingConfigs) => {
-                    const thisShouldBeReported = 
-                        (event === 'attention-start' && PageManager.pageHasAttention) || // actual attention start
-                        (event === 'attention-stop' && !PageManager.pageHasAttention) || // actual attention end
-                        (event === 'audio-start' && PageManager.pageHasAudio) || // actual audio start
-                        (event === 'audio-stop' && !PageManager.pageHasAudio) || // actual audio end
-                        (event === 'page-visit-start' || event === 'page-visit-stop');
-                    if (thisShouldBeReported) {
-                        console.log('REPORT', event, this._state);
-                        reportingConfigs.forEach(({ namespace, callback }) => {
-                            reportState(namespace, callback);
-                        })
-                    }
-                });
-            }
+            if (event in this.reporters && thisCallbackShouldBeRun) {
+                this._executeReportingCallbacks(event, params);
+            }  
         });
     }
 

@@ -22,19 +22,31 @@ basicCollector.collect(
     }
 );
 
+function closeOutEvent(state, timeStamp) {
+    state.attentionCount += 1;
+    state.totalAttentionTime += timeStamp - state.attentionStart;
+    delete state.attentionStart;
+}
+
 basicCollector.collect(
     'attention-stop', 
-    (state, pageInfo, pageManager) => {
-        state.attentionEnd = pageInfo.timeStamp;
-        state.attentionCount += 1;
-        state.totalAttentionTime += state.attentionEnd - state.attentionStart;
-        delete state.attentionStart;
-        delete state.attentionEnd;
+    (state, pageInfo) => {
+        closeOutEvent(state, pageInfo.timeStamp);
     }
 );
 
-basicCollector.collect('interval',
+basicCollector.collect(
+    `page-visit-stop`,
     (state, pageInfo, pageManager) => {
+        // close out the event if the current page the attention
+        if (pageManager.pageHasAttention) {
+            closeOutEvent(state, pageInfo.timeStamp);
+        }
+    }
+)
+
+basicCollector.collect('interval',
+    (state) => {
         const scrollHeight = document.documentElement.scrollHeight;
         const maxPixelScrollDepth =
             Math.min(scrollHeight,
@@ -47,6 +59,15 @@ basicCollector.collect('interval',
 // emit the payload on attention-stop and when the page is up.
 // you can include any number of namespace definitions after the event,
 // and it will send to each one of these.
-basicCollector.sendOn("attention-stop", { namespace: "basic" });
-basicCollector.sendOn("page-visit-stop", { namespace: "basic" });
+//basicCollector.sendOn("attention-stop", { schemaNamespace: "attentionEvent" });
+//basicCollector.sendOn("page-visit-stop", { schemaNamespace: "attentionEvent" });
+basicCollector.report('attention-stop', "attentionEvent");
+
+basicCollector.report('page-visit-stop', (state, send, pageInfo, pageManager) => {
+    // a page visit might stop (e.g. closing an inactive tab) without having
+    // the user's focus.
+    if (pageManager.pageHasAttention) {
+        send("attentionEvent", state);
+    }
+})
 basicCollector.run();

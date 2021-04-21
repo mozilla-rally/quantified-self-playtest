@@ -81,17 +81,17 @@ describe('Collector.js', function() {
        })
    })
 
+   // FIXME: these tests really got out of hand. Yeesh.
    describe("_addCallbacksToListener", function() {
-       it('adds to the onPageVisitStart listener', function() {
+        it('adds to the onPageVisitStart listener', function() {
             collector.collect('page-visit-start', fcn1);
             collector.collect('page-visit-start', fcn2);
             collector.collect('page-visit-start', fcn3);
             collector._addCallbacksToListener('page-visit-start');
             expect(PageManager.onPageVisitStart.listeners.length).toBe(1);
             PageManager.onPageVisitStart.send({ timeStamp: 1000});
-       })
-       
-       it('transforms the state object', function() {
+        })
+        it('transforms the state object', function() {
             collector.collect('page-visit-start', fcn1);
             collector.collect('page-visit-start', fcn2);
             collector.collect('page-visit-start', fcn3);
@@ -99,18 +99,29 @@ describe('Collector.js', function() {
             PageManager.onPageVisitStart.send({ timeStamp: 60000000 });
             expect(collector._state).toEqual({ value: 20, text: 'test', time: 60000000 });
         })
-        it('calls PageManager.sendMessage with the correct arguments when sent', function() {
+        it('calls PageManager.sendMessage when there is a string (the namespace) as the second argument', function() {
             collector.collect('page-visit-start', fcn1);
             collector.collect('page-visit-start', fcn2);
             collector.collect('page-visit-start', fcn3);
-            collector.sendOn("page-visit-start", { namespace: "test" });
+            // this function will send whatever the payload is to the "test" namespace as-is
+            collector.report("page-visit-start", "test");
+            collector._addCallbacksToListener('page-visit-start');
+            PageManager.onPageVisitStart.send({ timeStamp: 60000000 });
+            expect(PageManager.sendMessage.mock.calls.length).toBe(1);
+            expect(PageManager.sendMessage.mock.calls[0][0]).toEqual({ type: "test", value: 20, text: "test", time: 60000000 });
+        })
+        it('calls PageManager.sendMessage when collector.report has a function as the second argument', function() {
+            collector.collect('page-visit-start', fcn1);
+            collector.collect('page-visit-start', fcn2);
+            collector.collect('page-visit-start', fcn3);
+            collector.report("page-visit-start", (state, send) => { send('test', state) });
 
             collector._addCallbacksToListener('page-visit-start');
             PageManager.onPageVisitStart.send({ timeStamp: 60000000 });
             expect(PageManager.sendMessage.mock.calls.length).toBe(1);
             expect(PageManager.sendMessage.mock.calls[0][0]).toEqual({ type: "test", value: 20, text: "test", time: 60000000 });
         })
-        it('handles all events during a full lifecycle', function() {
+        it('handles PageManager events during a full single-page lifecycle', function() {
             const pageVisitStart1 = (state, { timeStamp }) => { state.time = timeStamp; state.count = 1; };
             const pageAttentionStart1 = (state, { timeStamp }) => { state.time = timeStamp; state.count += 1; };
             const pageAttentionStop1 = (state, { timeStamp }) => { state.time = timeStamp; state.count += 1; };
@@ -121,7 +132,7 @@ describe('Collector.js', function() {
             collector.collect('attention-stop', pageAttentionStop1);
             collector.collect('attention-stop', pageAttentionStop2);
             collector.collect('page-visit-stop', pageVisitStop1);
-            collector.sendOn('page-visit-stop', { namespace: "test" });
+            collector.report("page-visit-stop", (state, send) => { send('test', state) });
 
             collector._addCallbacksToListener('page-visit-start');
             collector._addCallbacksToListener('attention-start');
@@ -138,6 +149,27 @@ describe('Collector.js', function() {
 
             expect(collector._state).toEqual({ time: 6000030, count: 5, extra: true});
             expect(PageManager.sendMessage.mock.calls[0][0]).toEqual({ type: "test", time: 6000030, count: 5, extra: true });
+        })
+        it('handles a single interval collection', function() {
+            jest.useFakeTimers();
+            collector.collect('interval', (state) => {
+                state.count = (state.count || 0) + 1;
+            }, 500);
+            collector._addCallbacksToListener('interval');
+            jest.advanceTimersByTime(1501);
+            expect(collector._state).toEqual({ count: 3 });
+        })
+        it('handles multiple simultaneous interval collections', function() {
+            jest.useFakeTimers();
+            collector.collect('interval', (state) => {
+                state.count1 = (state.count1 || 0) + 1;
+            }, 500);
+            collector.collect('interval', (state) => {
+                state.count2 = (state.count2 || 0) + 1;
+            }, 200);
+            collector._addCallbacksToListener('interval');
+            jest.advanceTimersByTime(1501);
+            expect(collector._state).toEqual({ count1: 3, count2: 7 });
         })
     })
 });

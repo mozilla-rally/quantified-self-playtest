@@ -6,7 +6,7 @@
  const browser = require("webextension-polyfill");
  const sinon = require('sinon');
  
- const EventStreamInspector = require('../../src/event-stream-inspector').default;
+ const EventStreamInspector = require('../../lib/event-stream-inspector').default;
 
  describe('EventStreamInspector', function () {
   let webExtensionStorage = {};

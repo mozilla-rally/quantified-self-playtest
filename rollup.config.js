@@ -6,6 +6,7 @@ import fs from "fs";
 import commonjs from "@rollup/plugin-commonjs";
 import replace from "@rollup/plugin-replace";
 import resolve from "@rollup/plugin-node-resolve";
+import { terser } from "rollup-plugin-terser";
 
 function getCollectorScripts(path) {
   const files = fs.readdirSync( path );
@@ -30,6 +31,7 @@ export default (cliArgs) => {
         output: {
           file: `dist/content-scripts/${collector}`,
           sourcemap: isDevMode(cliArgs) ? "inline" : false,
+          format: 'iife'
         },
         plugins: [
           replace({

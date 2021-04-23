@@ -7,10 +7,8 @@
     export let data;
 
     let mounted = false;
-    console.log('what?')
     onMount(() => {
         mounted = true;
-        console.log({mounted})
     });
 
     const dispatch = createEventDispatcher();

@@ -1,6 +1,6 @@
-import Reporter from "../lib/reporter";
+import Reporter from "../../lib/reporter";
 
-const RS01Reporter = new Reporter({ collectorName: "attention" });
+const attention = new Reporter({ collectorName: "attention" });
 
 // Event properties that both of these event types consume.
 const sharedEventProperties = {
@@ -19,13 +19,13 @@ const sharedEventProperties = {
   description: "string",
 }
 
-RS01Reporter.addSchema("attention", {
+attention.addSchema("attention", {
   ...sharedEventProperties,
   maxRelativeScrollDepth: "number",
   maxPixelScrollDepth: "number",
   scrollHeight: "number",
 });
 
-RS01Reporter.addSchema("audio", {...sharedEventProperties});
+attention.addSchema("audio", {...sharedEventProperties});
 
-export default RS01Reporter;
+export default attention;

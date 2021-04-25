@@ -1,4 +1,4 @@
-import Collector from "../lib/collector";
+import Collector from "../../lib/collector";
 
 const head = new Collector();
 

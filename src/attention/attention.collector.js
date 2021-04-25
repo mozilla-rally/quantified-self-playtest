@@ -1,5 +1,5 @@
 // this is in the content script domain.
-import Collector from '../lib/collector';
+import Collector from '../../lib/collector';
 
 const RS01Collector = new Collector();
 

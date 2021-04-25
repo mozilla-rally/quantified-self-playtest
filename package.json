@@ -17,7 +17,7 @@
     "storybook": "start-storybook -p 6006",
     "test:unit": "jest",
     "test:integration": "npm run package && mv web-ext-artifacts/*.zip web-ext-artifacts/study.xpi && mocha --timeout 30000 \"./tests/integration/*.js\"",
-    "watch": "npm-run-all --parallel watch:raw watch:bundled",
+    "watch": "npm run build:options-page && npm-run-all --parallel watch:raw watch:bundled",
     "watch:options-page": "rollup -w rollup.options-page.config.js",
     "watch:raw": "npm run dev -- -w",
     "watch:bundled": "web-ext run --watch-file dist/background.js --watch-file dist/content-scripts/attention-collector.js --watch-file schemas/measurements.1.schema.json",
@@ -85,6 +85,8 @@
     "webextension-polyfill": "^0.7.0"
   },
   "dependencies": {
+    "dexie": "^3.0.3",
+    "glob": "^7.1.6",
     "immer": "^9.0.1",
     "sirv-cli": "^1.0.10"
   },

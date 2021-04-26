@@ -1,16 +1,22 @@
 <script>
     import { createEventDispatcher } from 'svelte';
-    export let name;
+    export let title;
     export let size;
+    export let description;
     const dispatch = createEventDispatcher();
 
     const volumeFormatter = new Intl.NumberFormat();
 </script>
 
-<div class='align-left'>
-    {name}
+<div class='align-left' style="padding-right: 2rem;">
+    <div style="padding-top:.45rem; font-weight: 700;">
+        {title}
+    </div>
+    {#if description}
+        <div style="padding-top:.2rem; font-size: .95rem;">{description}</div>
+    {/if}
 </div>
-<div class='as-number'>
+<div class='as-number' style="padding-top:.45rem;">
     {#if size}
         {volumeFormatter.format(~~size)}
     {:else}
@@ -18,8 +24,8 @@
     {/if}
 </div>
 <div>
-    <button disabled={size === 0} on:click={() => { dispatch("clear", name); }} class='btn-secondary'>🗑️ clear</button>
+    <button disabled={size === 0} on:click={() => { dispatch("clear", title); }} class='btn-secondary'>🗑️ clear</button>
 </div>
 <div>
-    <button disabled={size === 0} on:click={() => { dispatch("download", name); }}>{#if size === 0}😴{:else}🥳{/if} download</button>
+    <button disabled={size === 0} on:click={() => { dispatch("download", title); }}>{#if size === 0}😴{:else}🥳{/if} download</button>
 </div>

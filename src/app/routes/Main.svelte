@@ -2,7 +2,7 @@
     import { onMount, createEventDispatcher } from "svelte";
     import { tweened } from 'svelte/motion';
     import { elasticOut as easing } from 'svelte/easing';
-    import { fly } from "svelte/transition";
+    import { fly, fade } from "svelte/transition";
 
     import { downloadJSON } from './download';
     import NamespaceGrid from "../components/NamespaceGrid.svelte";
@@ -10,6 +10,7 @@
     import CheapDialog from "../components/CheapDialog.svelte";
     // export let namespaces;
     export let namespaces;
+    export let startingTime;
 
     let spinner = tweened(1, {duration: 700, easing});
     let mounted = false;
@@ -32,7 +33,7 @@
 }
 </style> -->
 {#if mounted}
-    <div class="admin" in:fly={{ duration: 800, y: 5 }}>
+    <div class="admin" in:fade={{ duration: 800 }}>
         <!-- <header>
             <h1>Event Stream Inspector</h1>
             <div class='cta'>
@@ -50,7 +51,7 @@
             <div in:fly={{y: 2.5, duration: 100 }}>
                 <CheapDialog on:escape={() => { confirm = undefined; }}>
                     <svelte:fragment slot="title">
-                        🗑️ Clear all data for {confirm.name}?
+                        🗑️ Clear all data for "{confirm.title}"?
                     </svelte:fragment>
                     <svelte:fragment slot="body">
                         This will clear {volumeFormatter.format(confirm.size)} entr{#if confirm.size === 1}y{:else}ies{/if} the data from this collection.
@@ -69,13 +70,16 @@
             {:else}
                 <div in:fly={{y:2.5, duration: 100 }}>
                     <div>
-                        <h2>🏗️ Download <span style="font-weight: 400;">The Datasets You've Collected</span></h2>
+                        <h2>🏗️ Download <span style="font-weight: 400;">The Datasets You've Built</span></h2>
                         <NamespaceGrid>
-                            {#each namespaces as { title, size, namespace }}
+                            {#each namespaces as { title, size, namespace, description }}
                                 <NamespaceControls 
-                                    on:clear={() => { confirm = { name: title, size: size, namespace }; }} 
+                                    on:clear={() => { confirm = { title, size: size, namespace }; }} 
                                     on:download={console.log} 
-                                name={title} size={size} />    
+                                    title={title} 
+                                    size={size}
+                                    description={description}
+                                 />    
                             {/each}
                         </NamespaceGrid>
                     </div>
@@ -83,5 +87,18 @@
             {/if}
             </div>
         </main>
+        <footer>
+            <ul>
+                <li>
+                    <a href='https://rally.mozilla.org'>Rally</a>
+                </li>
+                <li>
+                    <a href='https://rally.mozilla.org'>About</a>
+                </li>
+                <li>
+                    <a href='https://rally.mozilla.org'>Reach Out</a>
+                </li>
+            </ul>
+        </footer>
     </div>
 {/if}

@@ -111,48 +111,71 @@ button:disabled {
 .admin {
   /* max-width: 700px; */
   /* margin-top: 2rem; */
-  background-color: var(--surface-bg);
+  background-color: #f8f7f8;
+
+  display: grid;
+  min-height: 100vh;
+  grid-template-rows: max-content auto max-content;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.07),
     0 4px 8px rgba(0, 0, 0, 0.07), 0 8px 16px rgba(0, 0, 0, 0.07),
     0 16px 32px rgba(0, 0, 0, 0.07), 0 32px 64px rgba(0, 0, 0, 0.07);
 }
 
 header {
+  background-color: white;
   display: grid;
   grid-template-columns: auto max-content;
   align-items: center;
   position: relative;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  /* box-shadow: 0 1px 1px rgba(0, 0, 0, 0.01), 0 2px 2px rgba(0, 0, 0, 0.01),
-    0 4px 4px rgba(0, 0, 0, 0.01), 0 6px 8px rgba(0, 0, 0, 0.01),
-    0 8px 16px rgba(0, 0, 0, 0.01); */
-  /* color: ##4f3852;
-  background-color: #f7df57; */
+}
+
+footer {
+  min-height: 4rem;
+  display: grid;
+  place-content: center;
+  margin-top: 2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+footer ul {
+  margin: auto;
+  width: max-content;
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  gap: 48px;
+}
+
+footer a {
+  text-decoration: none;
+  font-size: 0.875rem;
+  color: var(--text-color);
 }
 
 h1 {
   margin: 0px;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: normal;
-  padding: 2rem;
+  padding: 1rem 3rem;
   font-weight: 700;
 }
 
 h2 {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   margin: 0px;
   margin-bottom: 2rem;
 }
 
 main {
-  min-height: calc(100vh - 16rem);
+  /* min-height: calc(100vh - 16rem); */
   background-color: hsl(300, 7%, 97%);
   /* padding: 2rem; */
   padding-top: 4rem;
 }
 
 .content-container {
-  max-width: 640px;
+  max-width: 680px;
   margin: auto;
 }
 
@@ -196,10 +219,11 @@ main {
   text-align: right;
   display: grid;
   grid-template-columns: auto auto max-content max-content;
-  grid-column-gap: 12px;
-  grid-row-gap: 12px;
-  align-items: center;
+  grid-column-gap: 24px;
+  grid-row-gap: 48px;
+  align-items: start;
   align-content: start;
+  color: var(--text-color);
 }
 
 .align-left {

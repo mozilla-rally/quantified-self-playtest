@@ -38,7 +38,7 @@ console.log('GENERATE OPTIONS PAGE');
  }
   
  export default (cliArgs) => [ {
-     input: "src/app/main.js",
+     input: "lib/options-page/main.js",
      output: {
        sourcemap: true,
        format: "iife",

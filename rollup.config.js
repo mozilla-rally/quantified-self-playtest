@@ -13,7 +13,7 @@ function isDevMode(cliArgs) {
 
 export default (cliArgs) => {
   /** Generate the intermediate background script into dist, and then read that into rollup. */
-  const backgroundScript = generateBackgroundScript({ config, isDevMode: isDevMode(cliArgs)});
+  const backgroundScript = generateBackgroundScript({ config, isDevMode: isDevMode(cliArgs) });
   const contentScripts = generateCollectorContentScripts({ config, isDevMode: isDevMode(cliArgs) });
   /** Return the rollup configurations for these two main components. */
   return [

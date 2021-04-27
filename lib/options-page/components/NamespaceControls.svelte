@@ -3,6 +3,7 @@
     export let title;
     export let size;
     export let description;
+    export let namespace;
     const dispatch = createEventDispatcher();
 
     const volumeFormatter = new Intl.NumberFormat();
@@ -27,5 +28,5 @@
     <button disabled={size === 0} on:click={() => { dispatch("clear", title); }} class='btn-secondary'>🗑️ clear</button>
 </div>
 <div>
-    <button disabled={size === 0} on:click={() => { dispatch("download", title); }}>{#if size === 0}😴{:else}🥳{/if} download</button>
+    <button disabled={size === 0} on:click={() => { dispatch("download", namespace); }}>{#if size === 0}😴{:else}🥳{/if} download</button>
 </div>

@@ -1,7 +1,7 @@
 <script>
-  import browser from 'webextension-polyfill';
   import { onMount } from 'svelte';
   import Main from "./Main.svelte";
+  import { downloadJSON } from './download';
   import { get, size, reset } from '../state';
   export let namespaces;
 
@@ -28,6 +28,12 @@ onMount(async () => {
 
 <Main 
   namespaces={newNamespaces} 
+  on:download={async (event) => {
+    const namespace = event.detail;
+    console.log(namespace);
+    const data = await get({ namespace });
+    downloadJSON(data, `browsing-${new Date().toISOString().replace(/:/g, '-').replace('.', '-')}.json`);
+  }}
   on:reset={async (event) => {
     const namespace = event.detail;
     await reset({ namespace });

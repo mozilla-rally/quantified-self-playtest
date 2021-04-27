@@ -4,7 +4,6 @@
     import { elasticOut as easing } from 'svelte/easing';
     import { fly, fade } from "svelte/transition";
 
-    import { downloadJSON } from './download';
     import NamespaceGrid from "../components/NamespaceGrid.svelte";
     import NamespaceControls from "../components/NamespaceControls.svelte";
     import CheapDialog from "../components/CheapDialog.svelte";
@@ -75,11 +74,12 @@
                             {#each namespaces as { title, size, namespace, description }}
                                 <NamespaceControls 
                                     on:clear={() => { confirm = { title, size: size, namespace }; }} 
-                                    on:download={console.log} 
-                                    title={title} 
-                                    size={size}
-                                    description={description}
-                                 />    
+                                    on:download 
+                                    {title} 
+                                    {size}
+                                    {description}
+                                    {namespace}
+                                 /> 
                             {/each}
                         </NamespaceGrid>
                     </div>

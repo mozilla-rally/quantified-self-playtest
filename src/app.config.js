@@ -6,10 +6,10 @@ export default [
         description: "How and where you browse, explained.",
         src: "src/attention/",
     },
-    {
-        namespace: "head",
-        title: "Page header elements",
-        description: "Another example used for mostly illustrative purposes.",
-        src: "src/head/"
-    }
+    // {
+    //     namespace: "head",
+    //     title: "Page header elements",
+    //     description: "Another example used for mostly illustrative purposes.",
+    //     src: "src/head/"
+    // }
 ]

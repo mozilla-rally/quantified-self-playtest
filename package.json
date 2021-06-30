@@ -85,6 +85,7 @@
     "webextension-polyfill": "^0.7.0"
   },
   "dependencies": {
+    "@mozilla/web-science": "^0.4.0",
     "dexie": "^3.0.3",
     "glob": "^7.1.6",
     "immer": "^9.0.1",

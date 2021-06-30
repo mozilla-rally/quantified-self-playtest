@@ -134,7 +134,7 @@ RS01Collector.on('audio-start',
 RS01Collector.on(
     'attention-stop', 
     (collector, pageInfo) => {
-        const finalState = finalizeEventState('attention', collector.get(), pageInfo.timeStamp, pageInfo.reason);
+        const finalState = finalizeEventState('attention', collector.get(), pageInfo.timeStamp, 'attention-stop');
         collector.send('attention', finalState);
     }
 );

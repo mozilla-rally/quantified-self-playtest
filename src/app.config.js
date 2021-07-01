@@ -1,15 +1,29 @@
-// here is where we list all the modules we want to use.
+/* 
+This is an array of modules that we'd like to include in this build.
+A module is defined as a single collector and a reporter.
+A collector collects information from a page visit.
+A reporter defines the schemas in the database and handles the inserting of the
+information collected by each module.
+*/
 export default [
-    {
-        namespace: "attention",
-        title: "Attention",
-        description: "How and where you browse, explained.",
-        src: "src/attention/",
-    },
     // {
-    //     namespace: "head",
-    //     title: "Page header elements",
-    //     description: "Another example used for mostly illustrative purposes.",
-    //     src: "src/head/"
-    // }
+    //     namespace: "attention",
+    //     title: "Attention",
+    //     description: "How and where you browse, measured.",
+    //     src: "src/attention/",
+    // },
+    {
+        namespace: "events",
+        title: "Attention & Audio Events",
+        description: "How and here you browse, measured.",
+        src: "src/events/"
+    },
+    {
+        namespace: "pages",
+        title: "Page Elements",
+        description: "Core features of each page you've visited.",
+        src: "src/pages/",
+        replaceOnSamePrimaryKey: true,
+        primaryKey: "pageId"
+    }
 ]

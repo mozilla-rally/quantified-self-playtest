@@ -2,33 +2,26 @@
 page.collector.js
 
 This collector captures page-level details.
-It will emit after the end of every attention event
-and replaces whatever entry exists for this particular page id.
 
-* pageId (primary key)
-* url
-* startTime
-* title
-* meta keywords
-* metaDescription
-* ogDescription
-* ogType
-* ogImage
-* ogUrl
-* ogProductPluralTitle
-* ogProductPriceAmount
-* ogProductPriceCurrency
-* maxRelativeScrollDepth
-* maxAbsoluteScrollDepth
-* largestPageHeight
 */
 
+import { Readability } from "@mozilla/readability";
 import Collector from '../../lib/collector';
 import { getContentByElementName, getContentByTagProperty } from './probes';
 const pageCollector = new Collector();
 
 function onEventEnd() {
     return (collector, pageInfo, pageManager) => {
+        
+        const documentClone = document.cloneNode(true); 
+        let contentLastSeen = (new Readability(documentClone)).parse();
+        if (contentLastSeen) {
+            contentLastSeen = contentLastSeen.textContent;
+        } else {
+            contentLastSeen = '';
+        }
+
+
         const state = collector.get();
         const maxScrollHeight = state.maxScrollHeight || 0;
         const maxPixelScrollDepth = state.maxPixelScrollDepth || 0;
@@ -50,7 +43,8 @@ function onEventEnd() {
             ogImage,
             ogURL,
             maxScrollHeight, 
-            maxPixelScrollDepth
+            maxPixelScrollDepth,
+            contentLastSeen
         });
     }
 }

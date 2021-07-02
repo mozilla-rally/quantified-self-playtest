@@ -30,9 +30,8 @@ onMount(async () => {
   namespaces={newNamespaces} 
   on:download={async (event) => {
     const namespace = event.detail;
-    console.log(namespace);
     const data = await get({ namespace });
-    downloadJSON(data, `browsing-${new Date().toISOString().replace(/:/g, '-').replace('.', '-')}.json`);
+    downloadJSON(data, `${namespace}-${new Date().toISOString().replace(/:/g, '-').replace('.', '-')}.json`);
   }}
   on:reset={async (event) => {
     const namespace = event.detail;

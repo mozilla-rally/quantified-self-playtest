@@ -6,12 +6,6 @@ A reporter defines the schemas in the database and handles the inserting of the
 information collected by each module.
 */
 export default [
-    // {
-    //     namespace: "attention",
-    //     title: "Attention",
-    //     description: "How and where you browse, measured.",
-    //     src: "src/attention/",
-    // },
     {
         namespace: "events",
         title: "Attention & Audio Events",

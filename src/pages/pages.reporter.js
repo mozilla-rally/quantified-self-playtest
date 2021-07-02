@@ -1,6 +1,6 @@
 import Reporter from "../../lib/reporter";
 
-const page = new Reporter({ collectorName: "page" });
+const page = new Reporter({ collectorName: "pages" });
 
 const sharedEventProperties = {
     pageId: "string",
@@ -13,6 +13,7 @@ const sharedEventProperties = {
     ogURL: "string",
     maxScrollHeight: "number", 
     maxPixelScrollDepth: "number",
+    contentLastSeen: 'string'
 }
 
 page.addSchema("page", {...sharedEventProperties});

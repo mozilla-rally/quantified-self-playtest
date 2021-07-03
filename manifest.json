@@ -21,7 +21,8 @@
     "unlimitedStorage",
     "idle",
     "<all_urls>",
-    "webNavigation"
+    "webNavigation",
+    "webRequest"
   ],
 
   "browser_action": {

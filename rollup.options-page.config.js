@@ -10,7 +10,7 @@
  import { terser } from 'rollup-plugin-terser';
  import css from 'rollup-plugin-css-only';
  
-console.log('GENERATE OPTIONS PAGE')
+console.log('GENERATE OPTIONS PAGE');
 
    const production = !process.env.ROLLUP_WATCH;
    /**
@@ -38,7 +38,7 @@ console.log('GENERATE OPTIONS PAGE')
  }
   
  export default (cliArgs) => [ {
-     input: "src/app/main.js",
+     input: "lib/options-page/main.js",
      output: {
        sourcemap: true,
        format: "iife",

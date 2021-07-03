@@ -6,7 +6,7 @@
  const browser = require("webextension-polyfill");
  const sinon = require('sinon');
  
- const EventStreamInspector = require('../../src/event-stream-inspector').default;
+ const EventStreamInspector = require('../../lib/event-stream-inspector').default;
 
  describe('EventStreamInspector', function () {
   let webExtensionStorage = {};
@@ -110,14 +110,14 @@
     });
   })
 
-  describe('._sendDataToUI', function() {
+  describe('._getData', function() {
     it('sends the current events to the port', async function() {
       const events = [
         { elapsed: 1023, url: "https://example.biz" }
       ]
       inspector.storage.get = jest.fn(() => Promise.resolve(events));
       inspector._connectionPort = { postMessage: jest.fn() }
-      await inspector._sendDataToUI();
+      await inspector._getData('test');
       expect(inspector._connectionPort.postMessage.mock.calls.length).toBe(1);
       expect(inspector._connectionPort.postMessage.mock.calls[0][0]).toEqual({type: "receive-data", data: events });
       expect(inspector.storage.get.mock.calls.length).toBe(1);
